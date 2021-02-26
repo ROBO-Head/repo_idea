@@ -4,5 +4,5 @@ public interface GitMapper {
 
     void add();
 
-    void update();
+    void update1();
 }
