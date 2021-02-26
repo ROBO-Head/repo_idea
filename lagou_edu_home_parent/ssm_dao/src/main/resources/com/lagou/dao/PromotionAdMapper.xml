@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lagou.dao.PromotionAdMapper">
+
+    <!-- 分页查询广告 -->
+    <resultMap id="ad_space" type="com.lagou.domain.PromotionAd">
+        <!--<id column="id" property="id"/>-->
+        <!--<result property="spaceId" column="spaceId"/>-->
+        <!--<result property="name" column="name"/>-->
+        <!--<result property="img" column="img"/>-->
+        <!--<result property="startTime" column="startTime"/>-->
+        <!--<result property="endTime" column="endTime"/>-->
+        <!--<result property="status" column="status"/>-->
+        <association property="promotionSpace" column="spaceId" javaType="com.lagou.domain.PromotionSpace"
+                     select="com.lagou.dao.PromotionSpaceMapper.findPromotionSpaceById"/>
+    </resultMap>
+    <select id="findAllPromotionAdByPage" resultMap="ad_space">
+        select * from promotion_ad
+    </select>
+
+    <!-- 新建广告信息 -->
+    <insert id="savePromotionAd" parameterType="com.lagou.domain.PromotionAd">
+        insert into promotion_ad values(null,#{name},#{spaceId},#{keyword},#{htmlContent},#{text},#{link},
+        #{startTime},#{endTime},#{createTime},#{updateTime},#{status},#{priority},#{img})
+    </insert>
+
+    <!-- 回显广告信息(根据id查询) -->
+    <select id="findPromotionAdById" parameterType="int" resultType="com.lagou.domain.PromotionAd">
+        select id, name, spaceId, startTime, endTime, status, img, link, text from promotion_ad WHERE id = #{id}
+    </select>
+
+    <!-- 修改广告信息 -->
+    <update id="updatePromotionAd" parameterType="com.lagou.domain.PromotionAd">
+        update promotion_ad
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="spaceId != null and spaceId != ''">
+                spaceId = #{spaceId},
+            </if>
+            <if test="link != null">
+                link=#{link},
+            </if>
+            <if test="status != null and status != '' or status == 0">
+                status=#{status},
+            </if>
+            <if test="img != null">
+                img=#{img},
+            </if>
+            <if test="text != null">
+                text=#{text},
+            </if>
+            <if test="startTime != null">
+                startTime=#{startTime},
+            </if>
+            <if test="endTime != null">
+                endTime=#{endTime},
+            </if>
+            <if test="updateTime != null">
+                updateTime=#{updateTime},
+            </if>
+        </trim>
+        <where>
+            <if test="id != null and id != ''">id = #{id}</if>
+        </where>
+    </update>
+
+    <!-- 广告动态上下线 -->
+    <update id="updatePromotionAdStatus" parameterType="com.lagou.domain.PromotionAd">
+        update promotion_ad set status=#{status}, updateTime=#{updateTime} where id=#{id}
+    </update>
+
+</mapper>
